@@ -12,6 +12,17 @@ class Facets extends Serialized
     public function beforeSave()
     {
         $values = $this->getValue();
+
+        if ($values || !is_array($values)) {
+            $values = json_decode($values);
+            $error = json_last_error();
+            if ($error) {
+                throw new LocalizedException(
+                    __('JSON provided for "%1" field is not valid JSON.', self::class)
+                );
+            }
+        }
+        
         if (is_array($values)) {
             unset($values['__empty']);
         }
